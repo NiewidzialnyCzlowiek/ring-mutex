@@ -24,9 +24,7 @@ hs_err_pid*
 
 # gradle files
 .gradle
-gradle
-gradlew
-gradlew*
+gradlew.*
 
 # intellij files
 .idea
