@@ -1,0 +1,3 @@
+initiator: true
+address: '127.0.0.1:8088'
+followerAddress: '127.0.0.1:8089'
