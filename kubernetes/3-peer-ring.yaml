@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer1
+  template:
+    metadata:
+      labels:
+        app: peer1
+    spec:
+      containers:
+        - name: peer1
+          image: ring-mutex-peer:1.0.0
+          env:
+            - name: followerAddress
+              value: "peer2:8088"
+          ports:
+            - containerPort: 8088
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer1
+spec:
+  ports:
+    - port: 8088
+  selector:
+    app: peer1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer2
+  template:
+    metadata:
+      labels:
+        app: peer2
+    spec:
+      containers:
+        - name: peer2
+          image: ring-mutex-peer:1.0.0
+          ports:
+            - containerPort: 8088
+          env:
+            - name: followerAddress
+              value: "peer3:8088"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer2
+spec:
+  ports:
+    - port: 8088
+  selector:
+    app: peer2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer3
+  template:
+    metadata:
+      labels:
+        app: peer3
+    spec:
+      containers:
+        - name: peer3
+          image: ring-mutex-peer:1.0.0
+          ports:
+            - containerPort: 8088
+          env:
+            - name: followerAddress
+              value: "peer1:8088"
+            - name: initiator
+              value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer3
+spec:
+  ports:
+    - port: 8088
+  selector:
+    app: peer3
