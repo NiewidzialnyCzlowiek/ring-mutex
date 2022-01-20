@@ -8,6 +8,8 @@ import java.io.*
 import java.time.Instant
 import kotlin.concurrent.thread
 import kotlin.random.Random
+import io.bartlomiejszal.ZmqSocketExtension.send
+import io.bartlomiejszal.ZmqSocketExtension.receive
 
 data class Config(
     val initiator: Boolean = false,
@@ -51,7 +53,7 @@ data class AppMessage(
     val data: AppData
 ) : Serializable
 
-class Peer(val config: Config) {
+class RingMutexPeer(private val config: Config) {
     private val zContext = ZContext()
     private val predecessorSocket = zContext.createSocket(SocketType.REP)
     private val followerSocket = zContext.createSocket(SocketType.REQ)
@@ -160,44 +162,7 @@ class Peer(val config: Config) {
         tokenRetransmitter = null
     }
 
-    private fun ZMQ.Socket.send(msg: AppMessage) {
-        try {
-            this.send(serialize(msg), ZMQ.DONTWAIT)
-        } catch (e: Exception) {
-            println("Cannot send message $msg. Exception: ${e.message}.")
-        }
-    }
 
-    private fun ZMQ.Socket.receive(): AppMessage? {
-        return try {
-            deserialize<AppMessage>(this.recv())
-        } catch (e: Exception) {
-            println("Cannot receive message. Exception ${e.message}.")
-            null
-        }
-    }
-
-    companion object {
-        fun <T> serialize(obj: T?): ByteArray {
-            if (obj == null) {
-                return ByteArray(0)
-            }
-            val baos = ByteArrayOutputStream()
-            val oos = ObjectOutputStream(baos)
-            oos.writeObject(obj)
-            oos.close()
-            return baos.toByteArray()
-        }
-
-        fun <T> deserialize(bytes: ByteArray?): T? {
-            if (bytes == null || bytes.isEmpty()) {
-                return null
-            }
-            val bais = ByteArrayInputStream(bytes)
-            val ois = ObjectInputStream(bais)
-            return ois.readObject() as T?
-        }
-    }
 }
 
 object App {
@@ -208,7 +173,7 @@ object App {
         println("Is this node the initiator: ${config.initiator}")
 
         var epoch = 1
-        val peer = Peer(config)
+        val peer = RingMutexPeer(config)
         if (config.initiator) {
             println("Initiating sequence")
             peer.setInitiator()
