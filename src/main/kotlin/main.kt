@@ -160,29 +160,6 @@ class Peer(val config: Config) {
         tokenRetransmitter = null
     }
 
-    private fun handleToken(message: AppMessage, sender: ZMQ.Socket) {
-        println("Received token: $message")
-        val tokenColor = message.data.color
-        val ack = AppMessage(MessageType.TOKEN_ACK, AppData(tokenColor))
-        sender.send(ack)
-
-        if (tokenColor != state.predecessorColor) {
-            retransmitToken = false
-            val newColor = if (state.color != tokenColor) {
-                tokenColor
-            } else {
-                Color.flip(state.color)
-            }
-            synchronized(this) {
-                state = state.copy(
-                    color = newColor,
-                    predecessorColor = tokenColor,
-                    holdingToken = true)
-            }
-            println("Current state: $state")
-        }
-    }
-
     private fun ZMQ.Socket.send(msg: AppMessage) {
         try {
             this.send(serialize(msg), ZMQ.DONTWAIT)

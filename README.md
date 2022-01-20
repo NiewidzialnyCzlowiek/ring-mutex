@@ -1,10 +1,13 @@
 # ring-mutex
 Algorithm for mutual exclusion in a bidirectional ring network topology with unreliable communication channels. 
+
 The program simulates communication channel omission. You can set the omission rate using  ```ackOmissionRate``` config parameter.
 
 # Build and run
 ### Build
-You can build this project using ```gradle build``` command.
+Please use openjdk11 to build and run this project
+
+You can build this project using ```gradle build``` command
 
 ### Run jar
 You can run the project using ```java -jar ./build/libs/ring-mutex-peer-1.0-SNAPSHOT.jar``` after building the project
