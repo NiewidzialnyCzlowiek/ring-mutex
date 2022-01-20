@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: peer1
-          image: ring-mutex-peer:1.0.0
+          image: niewidzialnyczlowiek/ring-mutex-peer
           env:
             - name: followerAddress
               value: "peer2:8088"
@@ -47,7 +47,7 @@ spec:
     spec:
       containers:
         - name: peer2
-          image: ring-mutex-peer:1.0.0
+          image: niewidzialnyczlowiek/ring-mutex-peer
           ports:
             - containerPort: 8088
           env:
@@ -80,7 +80,7 @@ spec:
     spec:
       containers:
         - name: peer3
-          image: ring-mutex-peer:1.0.0
+          image: niewidzialnyczlowiek/ring-mutex-peer
           ports:
             - containerPort: 8088
           env:
