@@ -158,6 +158,7 @@ class RingMutexPeer(private val config: Config) {
 
     private fun stopTokenRetransmission() {
         retransmitToken = false
+        tokenRetransmitter?.interrupt()
         tokenRetransmitter?.join()
         tokenRetransmitter = null
     }
